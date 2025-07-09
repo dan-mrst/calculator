@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/destyle.css@1.0.15/destyle.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rationale&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/style.css" />
+    <title>電卓</title>
+  </head>
+  <body>
+    <main>
+      <div class="calculator">
+        <div class="calculator__form">
+          <div class="calculator__result">
+            <div id="log" class="calculator__log"></div>
+            <div id="result" class="calculator__result-inner">
+              <span class="calc-unit">0</span>
+            </div>
+          </div>
+          <div class="calculator__buttons-wrapper">
+            <div class="calculator__buttons-outer">
+              <div class="calculator__num-buttons">
+                <button
+                  type="button"
+                  id="percent"
+                  class="calculator__button calculator__button--control"
+                  data-type="percent"
+                  data-val="%"
+                >
+                  %
+                </button>
+                <button
+                  type="button"
+                  id="num-root"
+                  class="calculator__button calculator__button--control"
+                  data-type="root"
+                  data-val="√"
+                  data-key="R"
+                >
+                  √
+                </button>
+                <button
+                  type="reset"
+                  id="clear"
+                  class="calculator__button calculator__button--control"
+                  data-type="clear"
+                  data-val=""
+                >
+                  C
+                </button>
+                <button
+                  type="button"
+                  id="num-0"
+                  class="calculator__button calculator__button--num"
+                  data-type="zero"
+                  data-val="0"
+                >
+                  0
+                </button>
+                <button
+                  type="button"
+                  id="num-00"
+                  class="calculator__button calculator__button--num"
+                  data-type="zero"
+                  data-val="00"
+                >
+                  00
+                </button>
+                <button
+                  type="button"
+                  id="num-dot"
+                  class="calculator__button calculator__button--num"
+                  data-type="dot"
+                  data-val="."
+                >
+                  .
+                </button>
+
+                <button
+                  type="button"
+                  id="num-1"
+                  class="calculator__button calculator__button--num"
+                  data-type="one"
+                  data-val="1"
+                >
+                  1
+                </button>
+                <button
+                  type="button"
+                  id="num-2"
+                  class="calculator__button calculator__button--num"
+                  data-type="number"
+                  data-val="2"
+                >
+                  2
+                </button>
+                <button
+                  type="button"
+                  id="num-3"
+                  class="calculator__button calculator__button--num"
+                  data-type="number"
+                  data-val="3"
+                >
+                  3
+                </button>
+                <button
+                  type="button"
+                  id="num-4"
+                  class="calculator__button calculator__button--num"
+                  data-type="number"
+                  data-val="4"
+                >
+                  4
+                </button>
+                <button
+                  type="button"
+                  id="num-5"
+                  class="calculator__button calculator__button--num"
+                  data-type="number"
+                  data-val="5"
+                >
+                  5
+                </button>
+                <button
+                  type="button"
+                  id="num-6"
+                  class="calculator__button calculator__button--num"
+                  data-type="number"
+                  data-val="6"
+                >
+                  6
+                </button>
+                <button
+                  type="button"
+                  id="num-7"
+                  class="calculator__button calculator__button--num"
+                  data-type="number"
+                  data-val="7"
+                >
+                  7
+                </button>
+                <button
+                  type="button"
+                  id="num-8"
+                  class="calculator__button calculator__button--num"
+                  data-type="number"
+                  data-val="8"
+                >
+                  8
+                </button>
+                <button
+                  type="button"
+                  id="num-9"
+                  class="calculator__button calculator__button--num"
+                  data-type="number"
+                  data-val="9"
+                >
+                  9
+                </button>
+              </div>
+              <!-- /.calculater__num-buttons -->
+              <div class="calculator__operator-buttons">
+                <button
+                  id="add"
+                  type="button"
+                  class="calculator__button calculator__button--operator"
+                  data-type="plus"
+                  data-val="+"
+                  data-key="；"
+                >
+                  +
+                </button>
+                <button
+                  id="sub"
+                  type="button"
+                  class="calculator__button calculator__button--operator"
+                  data-type="minus"
+                  data-val="-"
+                >
+                  -
+                </button>
+                <button
+                  id="mult"
+                  type="button"
+                  class="calculator__button calculator__button--operator"
+                  data-type="muldiv"
+                  data-val="×"
+                  data-key="： ＊"
+                >
+                  ×
+                </button>
+                <button
+                  type="button"
+                  id="div"
+                  class="calculator__button calculator__button--operator"
+                  data-type="muldiv"
+                  data-val="÷"
+                  data-key="/"
+                >
+                  ÷
+                </button>
+                <button
+                  type="button"
+                  id="delete"
+                  class="calculator__button calculator__button--control"
+                  data-type="delete"
+                  data-val=""
+                  data-method="delete"
+                  data-key="⌫"
+                >
+                  CE
+                </button>
+              </div>
+              <!-- /.calculator__operator-buttons -->
+            </div>
+            <!-- /.calculater__buttons-outer -->
+            <div class="calculater__buttons-outer"></div>
+            <!-- /.calculater__buttons-outer -->
+            <button
+              type="button"
+              id="do_calc"
+              class="calculator__button calculator__button--action"
+              data-val=""
+              data-type="calc"
+              data-key="↩︎"
+            >
+              =
+            </button>
+          </div>
+          <!-- /.calculator__buttons-wrapper -->
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

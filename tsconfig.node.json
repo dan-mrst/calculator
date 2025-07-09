@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "node", // ← Node コードなので node
+    "composite": true,
+    "types": ["node"] // Node の型を読み込む
+  },
+  "include": ["vite.config.ts", "vitest.config.ts"]
+}
