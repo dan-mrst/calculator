@@ -18,6 +18,10 @@ src/main.js
 test
 out
 
+.eslintrc.cjs
+.prettierrc.cjs
+.stylelintrc.cjs
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
