@@ -5,8 +5,7 @@
  * @param {Object} obj
  * @returns {Object}
  */
-const copyObject: <T>(obj: T) => T = <T>(obj: T) =>
-  JSON.parse(JSON.stringify(obj));
+const copyObject: <T>(obj: T) => T = <T>(obj: T) => JSON.parse(JSON.stringify(obj));
 
 /**
  * 配列要素を要素の内容自体を指定して削除します。
@@ -31,7 +30,7 @@ function removeItem<T>(arr: T[], target: T): void {
 /**
  * Object.keys()を拡張してユニオン型の配列を返すようにします。
  *
- * Wrapper of ```Object.keys()``` which returns union[]
+ * Wrapper of `Object.keys()` which returns union[]
  *
  * @param {Object} obj Object
  * @returns {string[]}
@@ -51,13 +50,11 @@ function objectKeys<T extends { [key: string]: unknown }>(obj: T): (keyof T)[] {
  * @param {Object} dict Dictionary (Object of which each parameter is an array)
  * @returns {Object} reversed dictionary {value:key}
  */
-const reverseDictionary: <
-  K extends string | number | symbol,
-  V extends string | number | symbol
->(dict: { [k in K]: V[] }) => { [v in V]: K } = <
-  K extends string | number | symbol,
-  V extends string | number | symbol
->(dict: { [k in K]: V[] }) => {
+const reverseDictionary: <K extends string | number | symbol, V extends string | number | symbol>(dict: {
+  [k in K]: V[];
+}) => { [v in V]: K } = <K extends string | number | symbol, V extends string | number | symbol>(dict: {
+  [k in K]: V[];
+}) => {
   return Object.assign(
     {},
     ...objectKeys(dict)
@@ -93,12 +90,7 @@ type buttonType =
 /**
  * button要素の種類をグループ化したものの名称
  */
-type buttonGroup =
-  | "zero"
-  | "natural"
-  | "state_changer"
-  | "plus_minus"
-  | "controller";
+type buttonGroup = "zero" | "natural" | "state_changer" | "plus_minus" | "controller";
 
 /**
  * 各buttonGroupに属するbuttonTypeの定義
@@ -118,8 +110,7 @@ const buttonsOfGroup: { [key in buttonGroup]: buttonType[] } = {
  *
  * buttonGroup which each buttonType belongs to
  */
-const groupOfButton: { [key in buttonType]: buttonGroup } =
-  reverseDictionary(buttonsOfGroup);
+const groupOfButton: { [key in buttonType]: buttonGroup } = reverseDictionary(buttonsOfGroup);
 
 /**
  * buttonのtypeと個別の値の組
@@ -182,19 +173,7 @@ state_zero.accept.push("calc");
  * 一般的な数字は後に何が来ても許容
  */
 const state_number: inputState = {
-  accept: [
-    "zero",
-    "number",
-    "one",
-    "dot",
-    "percent",
-    "root",
-    "muldiv",
-    "plus",
-    "minus",
-    "exp",
-    "calc",
-  ],
+  accept: ["zero", "number", "one", "dot", "percent", "root", "muldiv", "plus", "minus", "exp", "calc"],
   overwrite: [],
   renew: ["error"],
 };
@@ -349,9 +328,7 @@ function getFormula(elm: HTMLElement): string | null {
  * @param {HTMLDivElement} elm
  * @returns {number} length of the formula
  */
-const formulaFullLength: (elm: HTMLDivElement) => number = (
-  elm: HTMLDivElement
-) => {
+const formulaFullLength: (elm: HTMLDivElement) => number = (elm: HTMLDivElement) => {
   return elm.querySelectorAll("span").length;
 };
 
@@ -388,11 +365,7 @@ const lastNumberLength: (formula: string) => number = (formula: string) => {
  * @param g button group which the last inputted button belongs to
  * @returns {stateName | "input" | undefined } mapped next state
  */
-const stateMap: (
-  l: number,
-  c: stateName,
-  g: buttonGroup
-) => stateName | "input" | undefined = (
+const stateMap: (l: number, c: stateName, g: buttonGroup) => stateName | "input" | undefined = (
   l: number,
   c: stateName,
   g: buttonGroup
@@ -442,14 +415,14 @@ const stateMap: (
 
 /**
  * 現在の数式文字列と状態および最新のボタン入力から次に遷移する状態を判定します。\
- * 条件に応じて遷移先が異なる場合は```stateMap```で指定しておき、ボタン入力のみによって遷移先が決定する場合は```"input"```が返ってくるので```buttonType```を```stateName```に型変換して返します。指定がない場合は```"default"```を返します。
+ * 条件に応じて遷移先が異なる場合は`stateMap`で指定しておき、ボタン入力のみによって遷移先が決定する場合は`"input"`が返ってくるので`buttonType`を`stateName`に型変換して返します。指定がない場合は`"default"`を返します。
  *
  * Determine next state by condition of formula, current state and latest button input.\
- * The destinations are assigned in stateMap. If the destination is determined by the buttonInput only, ```stateMap``` returns ```input```, so this function returns buttonType converted into as stateName type.
- * If stateMap doesn't have mapped state in the condition, then returns ```"default"```.
+ * The destinations are assigned in `stateMap`. If the destination is determined by the buttonInput only, `stateMap` returns `input`, so this function returns buttonType converted into stateName type.
+ * If `stateMap` doesn't have mapped state in the condition, then returns `"default"`.
  *
  * ```ts
- * const next = getNextstate("1+√2","root",{type:"number",value:"2"});
+ * const next = getNextState("1+√2","root",{type:"number",value:"2"});
  * //->"in_root"
  * ```
  * @param {string} formula current formula (for 8 digit judgement)
@@ -457,18 +430,10 @@ const stateMap: (
  * @param {buttonInput} input latest button input
  * @returns {stateName} next state
  */
-function getNextState(
-  formula: string,
-  current: stateName,
-  input: buttonType
-): stateName {
+function getNextState(formula: string, current: stateName, input: buttonType): stateName {
   const len = lastNumberLength(formula);
   const grp = groupOfButton[input];
-  const mappedState: stateName | "input" | undefined = stateMap(
-    len,
-    current,
-    grp
-  );
+  const mappedState: stateName | "input" | undefined = stateMap(len, current, grp);
 
   if (mappedState === "input") {
     return input as stateName;
@@ -488,13 +453,8 @@ function getNextState(
  * @param {HTMLSpanElement} elm
  * @returns {boolean}
  */
-const is_root: (type: buttonType, elm: HTMLSpanElement) => boolean = (
-  type: buttonType,
-  elm: HTMLSpanElement
-) =>
-  type === "root" ||
-  ((elm?.dataset?.root === "true" || false) &&
-    ["number", "one", "zero", "dot"].includes(type));
+const is_root: (type: buttonType, elm: HTMLSpanElement) => boolean = (type: buttonType, elm: HTMLSpanElement) =>
+  type === "root" || ((elm?.dataset?.root === "true" || false) && ["number", "one", "zero", "dot"].includes(type));
 
 /**
  * 数式が計算すべき演算子系の文字を含むか判定します。
@@ -503,14 +463,11 @@ const is_root: (type: buttonType, elm: HTMLSpanElement) => boolean = (
  * @param {string} formula current formula
  * @returns {boolean}
  */
-const isToCalc: (formula: string) => boolean = (formula: string) =>
-  /[+\-×÷√%]/g.test(formula.replace(/^\-/, ""));
+const isToCalc: (formula: string) => boolean = (formula: string) => /[+\-×÷√%]/g.test(formula.replace(/^\-/, ""));
 
 /* == グローバル == */
 /* 要素取得 */
-const buttons = document.querySelectorAll(
-  "button"
-) as NodeListOf<HTMLButtonElement>;
+const buttons = document.querySelectorAll("button") as NodeListOf<HTMLButtonElement>;
 const resultElm = document.getElementById("result") as HTMLDivElement;
 const logElm = document.getElementById("log") as HTMLDivElement;
 
@@ -590,7 +547,7 @@ function inputUnitToFormula(input: buttonInput): void {
 }
 
 /**
- * 数式を```"0"```に、状態履歴をリセットして、現在の状態を```"default"```にします。
+ * 数式を`"0"`に、状態履歴をリセットして、現在の状態を`"default"`にします。
  *
  * Reset the formula to be "0", reset state history, and set current state to be "default".
  */
@@ -607,11 +564,7 @@ function resetCalculator(): void {
  */
 function calculateHandler(): void {
   const formula = getFormula(resultElm);
-  if (
-    formula &&
-    state[current_state].accept.includes("calc") &&
-    isToCalc(formula)
-  ) {
+  if (formula && state[current_state].accept.includes("calc") && isToCalc(formula)) {
     const result_inputs: buttonInput[] = calculate(formula);
 
     logElm.innerHTML = `${resultElm.innerHTML}<span class="calc-unit">=</span>`;
@@ -657,12 +610,11 @@ function defaultInput(input: buttonInput): void {
     backState();
     isInputted = true;
   } else if (state[current_state].accept.includes(input.type)) {
-    const last_unit = resultElm.querySelector(
-      "span:last-child"
-    ) as HTMLSpanElement;
-    resultElm.innerHTML += `<span class="calc-unit calc-unit--${
-      input.type
-    }" data-root="${is_root(input.type, last_unit)}">${input.value}</span>`;
+    const last_unit = resultElm.querySelector("span:last-child") as HTMLSpanElement;
+    resultElm.innerHTML += `<span 
+    class="calc-unit calc-unit--${input.type}" 
+    data-root="${is_root(input.type, last_unit)}"
+    >${input.value}</span>`;
     isInputted = true;
   }
 
@@ -683,9 +635,10 @@ function overwriteLastUnit(elm: HTMLSpanElement, ipt: buttonInput): void {
   const last_unit = elm.querySelector("span:last-child") as HTMLSpanElement;
   last_unit.remove();
   if (ipt.value !== "") {
-    elm.innerHTML += `<span class="calc-unit calc-unit--${
-      ipt.type
-    }" data-root="${is_root(ipt.type, last_unit)}">${ipt.value}</span>`;
+    elm.innerHTML += `<span 
+    class="calc-unit calc-unit--${ipt.type}" 
+    data-root="${is_root(ipt.type, last_unit)}"
+    >${ipt.value}</span>`;
   }
 }
 
@@ -710,40 +663,35 @@ function overwriteLastUnit(elm: HTMLSpanElement, ipt: buttonInput): void {
  */
 function calculate(formula: string): buttonInput[] {
   /**
-   * 指数表記 te+n は t×e+n、n√m の表記はn×√m、%は×0.01に正規化
+   * 負号の-は"m"にエスケープ、n√k の表記はn×√k、%は×0.01に正規化
    */
   const formatted: string = formula
-    .replace(/e/g, "×e")
+    .replace(/([%\d][×÷])-/g, "$1m")
     .replace(/(\d)+√/g, "$1×√")
     .replace(/%/g, "×0.01");
 
   /**
    * 数字のブロックか演算子を要素とする配列
+   * 負号のエスケープは戻す
    */
   const commands: string[] = [];
   let tmp: string = formatted;
   while (tmp !== "") {
-    const match = tmp.match(/(e[+-]\d+|\-?[0-9.√]+|[+-×÷])/);
+    const match = tmp.match(/(m?[0-9.√]+(?:e[+-]\d+)?|[+×÷\-])/);
     if (match) {
       tmp = tmp.replace(match[1], "");
-      commands.push(match[1]);
+      commands.push(match[1].replace("m", "-"));
     }
   }
-
   /**
-   * ルートと指数表記だけ優先して計算した結果の配列
+   * ルートだけ優先して計算した結果の配列
    */
   const rooted: string[] = commands.map((cmd) => {
-    if (cmd[0] === "√") {
-      return Math.sqrt(parseFloat(cmd.replace("√", ""))).toString();
-    } else if (cmd[0] === "e") {
-      const match = cmd.match(/e([+-])(\d+)/);
-      if (match) {
-        const sign = match[1];
-        const dig = match[2];
-        return (10 ** parseInt(sign + dig)).toString();
-      }
-      return cmd;
+    if (RegExp(/^-?√/).test(cmd)) {
+      //符号を保持
+      const sign = cmd[0] === "-" ? -1 : 1;
+      const innerRoot: number = parseFloat(cmd.replace(/\-?√/, ""));
+      return (sign * Math.sqrt(innerRoot)).toString();
     } else {
       return cmd;
     }
@@ -798,15 +746,11 @@ function calculate(formula: string): buttonInput[] {
   /**
    * 下に丸めた時の誤差
    */
-  const lower_error =
-    answer_abs * 10 ** (DIGIT_UPPER - 1) -
-    Math.floor(answer_abs * 10 ** (DIGIT_UPPER - 1));
+  const lower_error = answer_abs * 10 ** (DIGIT_UPPER - 1) - Math.floor(answer_abs * 10 ** (DIGIT_UPPER - 1));
   /**
    * 上に丸めた時の誤差
    */
-  const upper_error =
-    Math.ceil(answer_abs * 10 ** (DIGIT_UPPER - 1)) -
-    answer_abs * 10 ** (DIGIT_UPPER - 1);
+  const upper_error = Math.ceil(answer_abs * 10 ** (DIGIT_UPPER - 1)) - answer_abs * 10 ** (DIGIT_UPPER - 1);
   /**
    * 計算結果の数値を8桁に丸めて指数表記化
    * * 絶対値1未満かつ9桁目より下が有意に大きい -> 指数表記
@@ -815,18 +759,17 @@ function calculate(formula: string): buttonInput[] {
    *
    * （有意に大きい <=> 8桁で切り上げ/切り捨てした想定理想値との差分が両方とも閾値を超える）
    *
-   * ```0.0100000003```
-   * ->10^7倍が```100000.003```で理想値```100000```との差が小さいので丸め表示
+   * `0.0100000003`
+   * ->10^7倍が`100000.003`で理想値`100000`との差が小さいので丸め表示
    *
-   * ```0.09999999999```
-   * ->10^7倍が```9999999.999```で理想値```10000000```との差が小さいので丸め表示
+   * `0.09999999999`
+   * ->10^7倍が`9999999.999`で理想値`10000000`との差が小さいので丸め表示
    *
    *
    * 小数の末尾の連続0は省略
    */
   const answer_str: string = (
-    (answer_abs < 1 && lower_error > THRESHOLD && upper_error > THRESHOLD) ||
-    answer > 10 ** DIGIT_UPPER
+    (answer_abs < 1 && lower_error > THRESHOLD && upper_error > THRESHOLD) || answer > 10 ** DIGIT_UPPER
       ? answer.toExponential(DIGIT_UPPER - 1)
       : answer.toPrecision(DIGIT_UPPER)
   )
@@ -834,35 +777,21 @@ function calculate(formula: string): buttonInput[] {
     .replace(/(\d)\.0+(e[+-]\d+)/, "$1.0$2")
     .replace(/(\.\d*?[1-9])0+(e[+-]\d+)/, "$1$2");
 
-  console.log(
-    answer_str,
-    answer_abs * 10 ** (DIGIT_UPPER - 1),
-    Math.floor(answer_abs * 10 ** (DIGIT_UPPER - 1)),
-    upper_error,
-    lower_error,
-    THRESHOLD
-  );
-  console.log(answer.toExponential(DIGIT_UPPER - 1));
-  console.log(answer.toPrecision(DIGIT_UPPER));
-  console.log(answer_str);
-
-  const result: buttonInput[] = new Array(answer_str.length)
-    .fill(null)
-    .map((_, i) => {
-      const t =
-        answer_str[i] === "."
-          ? "dot"
-          : answer_str[i] === "0"
-          ? "zero"
-          : answer_str[i] === "e"
-          ? "exp"
-          : answer_str[i] === "+"
-          ? "plus"
-          : answer_str[i] === "-"
-          ? "minus"
-          : "number";
-      return { type: t, value: answer_str[i] };
-    });
+  const result: buttonInput[] = new Array(answer_str.length).fill(null).map((_, i) => {
+    const t =
+      answer_str[i] === "."
+        ? "dot"
+        : answer_str[i] === "0"
+        ? "zero"
+        : answer_str[i] === "e"
+        ? "exp"
+        : answer_str[i] === "+"
+        ? "plus"
+        : answer_str[i] === "-"
+        ? "minus"
+        : "number";
+    return { type: t, value: answer_str[i] };
+  });
 
   return result;
 }
@@ -900,7 +829,7 @@ const buttonTypeOfKey = reverseDictionary(keyInButtonType);
 
 /**
  * キーボード入力に対応するbuttonInput.value用の入力文字列\
- * ```keyInButtonType```で定義した入力の揺れを正規化
+ * `keyInButtonType`で定義した入力の揺れを正規化
  *
  * A string for buttonInput.value assigned to key input
  *
@@ -910,8 +839,8 @@ const buttonTypeOfKey = reverseDictionary(keyInButtonType);
  * "*"　->　"×"
  * ```
  *
- * @param key ```keyDownEvent.key```
- * @returns string for ```buttonInput.value```
+ * @param key `keyDownEvent.key`
+ * @returns string for `buttonInput.value`
  */
 const keyValue: (key: string) => string = (key: string) => {
   switch (key) {
