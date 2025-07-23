@@ -142,6 +142,7 @@ type stateName =
   | "one"
   | "muldiv"
   | "addsub"
+  | "minus"
   | "dot"
   | "decimal"
   | "percent"
@@ -216,6 +217,13 @@ state_muldiv.accept.push("minus");
  */
 const state_addsub: inputState = copyObject(_state_operator);
 state_addsub.overwrite.push("minus");
+
+/**
+ * 加減算のときは直後の負号の-は上書き
+ */
+const state_minus: inputState = copyObject(_state_operator);
+removeItem(state_minus.overwrite, "muldiv");
+removeItem(state_minus.overwrite, "plus");
 
 /**
  * 数字系許容の雛形：直接使用しない
@@ -298,6 +306,7 @@ const state: { [key in stateName]: inputState } = {
   one: state_one,
   muldiv: state_muldiv,
   addsub: state_addsub,
+  minus: state_minus,
   dot: state_dot,
   decimal: state_decimal,
   percent: state_percent,
@@ -385,7 +394,7 @@ const stateMap: (l: number, c: stateName, g: buttonGroup) => stateName | "input"
   const map: {
     [group in buttonGroup]: { [current in stateName]?: stateName } & {
       always?: stateName | "input";
-      others?: "input";
+      others?: stateName | "input";
     };
   } = {
     zero: {
@@ -405,8 +414,8 @@ const stateMap: (l: number, c: stateName, g: buttonGroup) => stateName | "input"
       in_root: "in_root",
       others: "input",
     },
+    plus_minus: { muldiv: "minus", others: "addsub" },
     state_changer: { always: "input" },
-    plus_minus: { always: "addsub" },
     controller: {},
   };
   //優先順は常時 -> 個別定義 -> その他の場合
@@ -531,10 +540,12 @@ function inputUnitToFormula(input: buttonInput): void {
       break;
     case "clear":
       resetCalculator();
+      resetLogDisplay();
       break;
     case "delete":
       if (formulaFullLength(resultElm) === 1) {
         resetCalculator();
+        resetLogDisplay();
       } else {
         overwriteLastUnit(resultElm, input);
         backState();
@@ -555,6 +566,15 @@ function resetCalculator(): void {
   resultElm.innerHTML = '<span class="calc-unit">0</span>';
   state_history.splice(0);
   updateState("default");
+}
+
+/**
+ * 表示上の計算履歴をリセットします。
+ *
+ * Reset calculate log display.
+ */
+function resetLogDisplay(): void {
+  logElm.innerHTML = "";
 }
 
 /**
@@ -663,12 +683,9 @@ function overwriteLastUnit(elm: HTMLSpanElement, ipt: buttonInput): void {
  */
 function calculate(formula: string): buttonInput[] {
   /**
-   * 負号の-は"m"にエスケープ、n√k の表記はn×√k、%は×0.01に正規化
+   * 負号の-は"m"にエスケープ、n√k の表記はn×√kに正規化
    */
-  const formatted: string = formula
-    .replace(/([%\d][×÷])-/g, "$1m")
-    .replace(/(\d)+√/g, "$1×√")
-    .replace(/%/g, "×0.01");
+  const formatted: string = formula.replace(/([%\d][×÷])-/g, "$1m").replace(/(\d)+√/g, "$1×√");
 
   /**
    * 数字のブロックか演算子を要素とする配列
@@ -677,7 +694,7 @@ function calculate(formula: string): buttonInput[] {
   const commands: string[] = [];
   let tmp: string = formatted;
   while (tmp !== "") {
-    const match = tmp.match(/(m?[0-9.√]+(?:e[+-]\d+)?|[+×÷\-])/);
+    const match = tmp.match(/(m?[0-9.√]+(?:e[+-]\d+)?(?:%)?|[+×÷\-])/);
     if (match) {
       tmp = tmp.replace(match[1], "");
       commands.push(match[1].replace("m", "-"));
@@ -690,11 +707,22 @@ function calculate(formula: string): buttonInput[] {
     if (RegExp(/^-?√/).test(cmd)) {
       //符号を保持
       const sign = cmd[0] === "-" ? -1 : 1;
-      const innerRoot: number = parseFloat(cmd.replace(/\-?√/, ""));
-      return (sign * Math.sqrt(innerRoot)).toString();
-    } else {
-      return cmd;
+      //%を保持
+      const percent = cmd[cmd.length - 1] === "%" ? "%" : "";
+      const innerRoot: number = parseFloat(cmd.replace(/\-?√/, "").replace("%", ""));
+      return (sign * Math.sqrt(innerRoot)).toString() + percent;
     }
+    return cmd;
+  });
+  /**
+   * %を優先して計算した結果の配列
+   */
+  const percented: string[] = rooted.map((cmd) => {
+    if (RegExp(/^-?[\d.]+%/).test(cmd)) {
+      const num: number = parseFloat(cmd.replace("%", ""));
+      return (num * 0.01).toString();
+    }
+    return cmd;
   });
 
   /* 四則演算 */
@@ -702,7 +730,7 @@ function calculate(formula: string): buttonInput[] {
   let operator: string = "+";
   let is0div = false;
   let isError = false;
-  rooted.forEach((cmd) => {
+  percented.forEach((cmd) => {
     let num: number = parseFloat(cmd);
     if (isNaN(num)) {
       operator = cmd;
